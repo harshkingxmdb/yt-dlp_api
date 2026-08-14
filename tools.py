@@ -15,6 +15,7 @@ redis_client = sync_redis.Redis(
     username=REDIS_USERNAME,
     password=REDIS_PASSWORD,
     ssl=REDIS_SSL,
+    ssl_cert_reqs=None,  # Heroku Redis / some managed Redis use self-signed certs
     socket_connect_timeout=5,
     socket_timeout=5,
 )
@@ -33,6 +34,7 @@ async def get_async_redis():
             username=REDIS_USERNAME,
             password=REDIS_PASSWORD,
             ssl=REDIS_SSL,
+            ssl_cert_reqs=None,  # Heroku Redis / some managed Redis use self-signed certs
             socket_connect_timeout=5,
             socket_timeout=5,
             max_connections=20,
