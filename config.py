@@ -27,8 +27,8 @@ load_dotenv()
 API_ID = int(os.environ.get("API_ID", 2040))
 API_HASH = os.environ.get("API_HASH", "b18441a1ff607e10a989891a5462e627")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-GROUP = os.environ.get("TG_GROUP", "nub_coder_s")
-CHANNEL = os.environ.get("TG_CHANNEL", "nub_coders")
+GROUP = os.environ.get("TG_GROUP", "shona_support")
+CHANNEL = os.environ.get("TG_CHANNEL", "shona_bots")
 
 # ── API Base URL ───────────────────────────────────────────────
 BASE_URL = os.environ.get("BASE_URL", "https://api.nubcoders.com").rstrip("/")
@@ -37,10 +37,25 @@ admin_ids_str = os.environ.get("ADMIN_IDS", "")
 ADMIN_IDS = [int(x) for x in admin_ids_str.split() if x.isdigit()]
 
 # ── Redis ──────────────────────────────────────────────────────
-REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
-REDIS_PORT = int(os.environ.get("REDIS_PORT", 15440))
-REDIS_USERNAME = os.environ.get("REDIS_USERNAME", "default")
-REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD")
+# If REDIS_URL is set (e.g. by a Heroku Redis addon: redis://user:pass@host:port
+# or rediss://... for TLS), auto-split it into the discrete vars below.
+# Explicit REDIS_HOST / REDIS_PORT / REDIS_USERNAME / REDIS_PASSWORD (if set)
+# always take priority over REDIS_URL.
+_redis_url = os.environ.get("REDIS_URL")
+if _redis_url:
+    from urllib.parse import urlparse
+    _parsed = urlparse(_redis_url)
+    REDIS_HOST = os.environ.get("REDIS_HOST", _parsed.hostname or "localhost")
+    REDIS_PORT = int(os.environ.get("REDIS_PORT", _parsed.port or 15440))
+    REDIS_USERNAME = os.environ.get("REDIS_USERNAME", _parsed.username or "default")
+    REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", _parsed.password)
+    REDIS_SSL = os.environ.get("REDIS_SSL", "1" if _parsed.scheme == "rediss" else "0") == "1"
+else:
+    REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
+    REDIS_PORT = int(os.environ.get("REDIS_PORT", 15440))
+    REDIS_USERNAME = os.environ.get("REDIS_USERNAME", "default")
+    REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD")
+    REDIS_SSL = os.environ.get("REDIS_SSL", "0") == "1"
 
 # ── Cookies ────────────────────────────────────────────────────
 # Path to the Netscape cookies file yt-dlp reads. Bootstrapped once at
