@@ -4,7 +4,7 @@ import string
 import secrets
 import time
 
-from config import REDIS_HOST, REDIS_PORT, REDIS_USERNAME, REDIS_PASSWORD, ADMIN_IDS
+from config import REDIS_HOST, REDIS_PORT, REDIS_USERNAME, REDIS_PASSWORD, REDIS_SSL, ADMIN_IDS
 
 # ── Redis clients ──────────────────────────────────────────────
 # Sync client kept only for admin.py's redis_client usages (keys/info calls).
@@ -14,6 +14,7 @@ redis_client = sync_redis.Redis(
     decode_responses=True,
     username=REDIS_USERNAME,
     password=REDIS_PASSWORD,
+    ssl=REDIS_SSL,
     socket_connect_timeout=5,
     socket_timeout=5,
 )
@@ -31,10 +32,9 @@ async def get_async_redis():
             decode_responses=True,
             username=REDIS_USERNAME,
             password=REDIS_PASSWORD,
-            socket_connect_timeout=10,
-            socket_timeout=10,
-            health_check_interval=30,
-            retry_on_timeout=True,
+            ssl=REDIS_SSL,
+            socket_connect_timeout=5,
+            socket_timeout=5,
             max_connections=20,
         )
     return _async_redis
@@ -215,4 +215,3 @@ async def get_recent_errors(count: int = 20) -> list:
         except Exception:
             continue
     return entries
-
