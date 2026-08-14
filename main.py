@@ -875,7 +875,6 @@ def start_services():
     print(f"🌐 Starting FastAPI server on http://0.0.0.0:{port}")
     uvicorn.run(app, host="0.0.0.0", port=port, log_level="info", loop="asyncio")
 
-
 if __name__ == "__main__":
     try:
         from config import BOT_TOKEN
