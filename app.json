@@ -1,0 +1,81 @@
+{
+  "name": "NUB YT API",
+  "description": "FastAPI + Telegram bot backend providing a music/YouTube search & stream API",
+  "keywords": ["python", "fastapi", "telegram", "yt-dlp", "music-api"],
+  "buildpacks": [
+    { "url": "heroku-community/apt" },
+    { "url": "heroku/python" }
+  ],
+  "addons": [
+    { "plan": "heroku-redis:mini" }
+  ],
+  "env": {
+    "API_ID": {
+      "description": "Telegram API ID from my.telegram.org",
+      "required": true
+    },
+    "API_HASH": {
+      "description": "Telegram API Hash from my.telegram.org",
+      "required": true
+    },
+    "BOT_TOKEN": {
+      "description": "Bot token from @BotFather",
+      "required": true
+    },
+    "TG_GROUP": {
+      "description": "Support group username (without @)",
+      "required": false
+    },
+    "TG_CHANNEL": {
+      "description": "Update channel username (without @)",
+      "required": false
+    },
+    "ADMIN_IDS": {
+      "description": "Space-separated Telegram user IDs with admin access",
+      "required": true
+    },
+    "REDIS_URL": {
+      "description": "Redis connection string (auto-filled if using the heroku-redis addon above)",
+      "required": false
+    },
+    "DAILY_LIMIT": {
+      "description": "Daily API request limit for normal users",
+      "value": "1000",
+      "required": false
+    },
+    "ADMIN_LIMIT": {
+      "description": "Daily API request limit for admin tokens",
+      "value": "10000",
+      "required": false
+    },
+    "COOKIES_FILE": {
+      "description": "yt-dlp cookies file name",
+      "value": "cookies.txt",
+      "required": false
+    },
+    "COOKIES_BOOTSTRAP_URL": {
+      "description": "YouTube URL used to test cookies at startup",
+      "value": "https://www.youtube.com/watch?v=BaW_jenozKc",
+      "required": false
+    },
+    "COOKIES_REFRESH_HOURS": {
+      "description": "Hours between cookie refreshes (0 disables)",
+      "value": "6",
+      "required": false
+    },
+    "API_HOST": {
+      "description": "Your deployed app's hostname, e.g. your-app.herokuapp.com",
+      "required": true
+    },
+    "BASE_URL": {
+      "description": "Your deployed app's full base URL, e.g. https://your-app.herokuapp.com",
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  }
+}
