@@ -58,7 +58,7 @@ def _export() -> None:
         ]
         logger.info(f"[COOKIES] Exporting {COOKIES_FILE} from {browser}...")
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         except Exception as e:
             errors.append(f"{browser}: {e}")
             continue
@@ -70,11 +70,26 @@ def _export() -> None:
 
 
 def bootstrap() -> None:
-    """Export browser cookies into COOKIES_FILE once, at startup."""
+    """Kick off the cookie export in a background daemon thread.
+
+    IMPORTANT: this is intentionally non-blocking. On hosts with no real
+    browser installed (Heroku, most cloud VMs), `_export()` can be slow or
+    hang, which previously stalled the whole app's startup long enough to
+    trip Heroku's boot timeout (SIGKILL before FastAPI/the bot ever came up).
+    Running it in a background thread means the API and bot always start
+    immediately; cookies simply become available a little later (or not at
+    all if no browser exists) without ever blocking the process.
+    """
     if os.path.exists(COOKIES_FILE):
         logger.info(f"[COOKIES] Using existing {COOKIES_FILE}")
         return
-    _export()
+
+    if not _browsers():
+        logger.info("[COOKIES] No browser configured (COOKIES_BROWSER); skipping bootstrap")
+        return
+
+    threading.Thread(target=_export, daemon=True).start()
+    logger.info("[COOKIES] Bootstrap export started in background")
 
 
 def start_refresh() -> None:
@@ -89,4 +104,3 @@ def start_refresh() -> None:
 
     threading.Thread(target=_loop, daemon=True).start()
     logger.info(f"[COOKIES] Refresh every {COOKIES_REFRESH_HOURS}h")
-
