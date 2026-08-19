@@ -15,6 +15,7 @@ Format picks mirror the yt-dlp selectors they replace, itag for itag, so the API
 keeps returning the same codecs it always did (opus audio, mp4 muxed video).
 """
 import logging
+import os
 import re
 
 import httpx
@@ -29,8 +30,13 @@ _URL = f"https://youtubei.googleapis.com/youtubei/v1/player?key={_KEY}"
 _ID_RE = re.compile(r"(?:v=|/shorts/|youtu\.be/|/embed/|/v/|/live/)([A-Za-z0-9_-]{11})")
 _BARE_ID_RE = re.compile(r"[A-Za-z0-9_-]{11}")
 
+# Optional proxy for the Innertube fast path too — same PROXY env var as
+# ytdlp_runner.py, so one config value routes ALL outbound YouTube traffic
+# around a blocked/flagged datacenter IP (e.g. Heroku's).
+_PROXY = os.environ.get("PROXY", "").strip() or None
+
 # One shared client for the lifetime of the process (matches search_service).
-_client = httpx.AsyncClient(http2=True, timeout=8)
+_client = httpx.AsyncClient(http2=True, timeout=8, proxy=_PROXY)
 
 _ANDROID_UA = "com.google.android.youtube/20.10.38 (Linux; U; Android 11) gzip"
 
