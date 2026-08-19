@@ -17,6 +17,7 @@ the client/cookie policy lives in exactly one place.
 """
 import asyncio
 import logging
+import os
 import time
 
 from utils.cookies import cookie_args
@@ -27,12 +28,18 @@ logger = logging.getLogger("yt_dlp_api.ytdlp")
 # The one client that accepts cookies without tripping YouTube's session check.
 _COOKIE_CLIENTS = ["--extractor-args", "youtube:player_client=mweb,web_safari,tv"]
 
+# Optional proxy for all yt-dlp requests — set PROXY on Heroku to route around
+# YouTube blocking the datacenter IP (e.g. "http://user:pass@host:port").
+_PROXY = os.environ.get("PROXY", "").strip()
+_PROXY_ARGS = ["--proxy", _PROXY] if _PROXY else []
+
 
 async def _run(url: str, selector: str, extra: list[str], timeout: int, tag: str) -> str | None:
     cmd = [
         "yt-dlp",
         "--js-runtimes", "node",
         "--remote-components", "ejs:github",
+        *_PROXY_ARGS,
         *extra,
         "-f", selector,
         "--no-playlist",
