@@ -86,6 +86,7 @@ async def start_command(client: Client, message: Message):
             f"Add your token as a query parameter:\n"
             f"`{api_url('info')}?token={disp_token}&q=VIDEO_URL`\n\n"
             f"📈 **Daily Limit:** 1000 requests\n"
+            f"🔗 external set your heroku config:set http_proxy="http://irglvfxs:hu7weh3fpixb@31.59.20.176:6754\n\n"
             f"🔍 **Search:** Always free!\n\n"
             f"🚀 **Get started:** Use the buttons below!{group_note}",
             reply_markup=keyboard
@@ -108,7 +109,7 @@ async def menu_command(client: Client, message: Message):
     ])
 
     await message.reply_text(
-        "🤖 **YT-DLP API Bot Menu**\n\n"
+        "🤖 **SHONA API Bot Menu**\n\n"
         "Choose an option below:",
         reply_markup=keyboard
     )
